@@ -1,4 +1,11 @@
 package com.ohgun.api.calculator.domain;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class CalculatorDTO {
 

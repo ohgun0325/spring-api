@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용자 목록</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>사용자 관리 시스템</h1>
+
+        <!-- 메시지 표시 -->
+        <div th:if="${messenger}" class="message" th:classappend="${messenger.code == 200 ? 'success' : 'error'}">
+            <strong th:text="${messenger.message}">메시지</strong>
+        </div>
+
+        <!-- 컨트롤 버튼들 -->
+        <div class="controls">
+            <a href="/users/all" class="btn btn-success">전체 사용자 조회</a>
+            <button onclick="loadCSVData()" class="btn">CSV 데이터 로드</button>
+        </div>
+
+        <!-- 사용자 추가 폼 -->
+        <div class="form-container">
+            <h3>새 사용자 추가</h3>
+            <form action="/users" method="post">
+                <div class="form-group">
+                    <label for="userId">사용자 ID:</label>
+                    <input type="text" id="userId" name="userId" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">이름:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">성별:</label>
+                    <input type="text" id="gender" name="gender" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">나이:</label>
+                    <input type="text" id="age" name="age" required>
+                </div>
+                <button type="submit" class="btn">사용자 추가</button>
+            </form>
+        </div>
+
+        <!-- 사용자 검색 폼 -->
+        <div class="form-container">
+            <h3>사용자 검색</h3>
+            <form action="/users/id/{id}" method="get">
+                <div class="form-group">
+                    <label for="searchId">사용자 ID로 검색:</label>
+                    <input type="text" id="searchId" name="id" required>
+                </div>
+                <button type="submit" class="btn">검색</button>
+            </form>
+        </div>
+
+        <!-- 사용자 목록 테이블 -->
+        <div th:if="${users != null and !users.empty}">
+            <h3>사용자 목록</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>사용자 ID</th>
+                        <th>생존 여부</th>
+                        <th>클래스</th>
+                        <th>이름</th>
+                        <th>성별</th>
+                        <th>나이</th>
+                        <th>형제/배우자</th>
+                        <th>부모/자녀</th>
+                        <th>티켓</th>
+                        <th>요금</th>
+                        <th>객실</th>
+                        <th>탑승항구</th>
+                        <th>작업</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.userId}">-</td>
+                        <td th:text="${user.survived}">-</td>
+                        <td th:text="${user.pclass}">-</td>
+                        <td th:text="${user.name}">-</td>
+                        <td th:text="${user.gender}">-</td>
+                        <td th:text="${user.age}">-</td>
+                        <td th:text="${user.sibSp}">-</td>
+                        <td th:text="${user.parch}">-</td>
+                        <td th:text="${user.ticket}">-</td>
+                        <td th:text="${user.fare}">-</td>
+                        <td th:text="${user.cabin}">-</td>
+                        <td th:text="${user.embarked}">-</td>
+                        <td>
+                            <a th:href="@{/users/{id}(id=${user.userId})}" class="btn btn-danger"
+                                onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 데이터가 없을 때 메시지 -->
+        <div th:if="${users == null or users.empty}" class="message">
+            <p>표시할 사용자 데이터가 없습니다.</p>
+        </div>
+    </div>
+
+    <script>
+        function loadCSVData() {
+            if (confirm('CSV 파일에서 데이터를 로드하시겠습니까?')) {
+                fetch('/users/all', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('데이터 로드 중 오류가 발생했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('데이터 로드 중 오류가 발생했습니다.');
+                    });
+            }
+        }
+    </script>
+</body>
+
+</html>

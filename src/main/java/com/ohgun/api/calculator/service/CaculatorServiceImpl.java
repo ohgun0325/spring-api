@@ -1,14 +1,8 @@
-package com.ohgun.api.calculator.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+package com.ohgun.api.calculator.service;
 
 import com.ohgun.api.calculator.domain.CalculatorDTO;
-import com.ohgun.api.calculator.service.CalculatorService;
 
-@Controller
-public class CalculatorController implements CalculatorService{
+public class CaculatorServiceImpl implements CalculatorService {
 
     @Override
     public int add(CalculatorDTO addDTO) {
@@ -34,6 +28,4 @@ public class CalculatorController implements CalculatorService{
         throw new UnsupportedOperationException("Unimplemented method 'divide'");
     }
     
-    
 }
-
